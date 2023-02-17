@@ -1,6 +1,7 @@
 const express = require('express');
 var figlet = require('figlet');
 var cors = require('cors');
+var fs = require('fs');
 
 const app = express();
 app.use(cors());
@@ -9,6 +10,14 @@ const port = 8080;
 
 app.get('/', function(req, res) {
     res.send('Hello World');
+})
+
+app.get('/main', function(req, res) {
+    fs.readFile('index.html', function(error, data) {
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        //console.log(data);
+        res.end(data);
+    })
 })
 
 app.get('/dog', function(req, res) {
