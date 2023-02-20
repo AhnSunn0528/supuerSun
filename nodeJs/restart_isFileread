@@ -1,0 +1,8 @@
+const { watchFile } = require('fs');
+let sql = require('../test-sql.js'); // 데이터베이스 쿼리문이 저장되어 있는 파일
+
+watchFile(__dirname + '../test-sql.js', (curr, prev) => { // sql.js 파일에 변경이 일어났는지 감시하고 변경이 일어났으면 콜백 리스너 실행
+    console.log('sql 변경시 재시작 없이 반영하도록 함');
+    delete require.cache[require.resolve('../test-sql.js')]; // 캐시에 저장되어 있는 파일 삭제
+    sql = require('../test-sql.js'); // sql 파일에 변경이 일어날때마다 sql.js 재할당
+})
