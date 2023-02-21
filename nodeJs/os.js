@@ -1,5 +1,5 @@
-//const os = require('os');
-import OS from 'os';
+const OS = require('os');
+//import OS from 'os';
 console.log(OS.arch()); // CPU 아키텍쳐
 console.log(OS.cpus()); // 컴퓨터의 CPU 코어정보를 배열로 리턴
 console.log(OS.hostname());

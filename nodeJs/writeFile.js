@@ -1,4 +1,5 @@
-import fs from 'fs';
+//import fs from 'fs';
+const fs = require('fs');
 
 let text = '파일 쓰기 테스트';
 fs.writeFile('./sample/test2-1.txt', text, 'utf8', (err) => {

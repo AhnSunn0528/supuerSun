@@ -1,5 +1,5 @@
-//const crypto = require('crypto');
-import crypto from 'crypto';
+const crypto = require('crypto');
+//import crypto from 'crypto';
 
 console.log('base64 :', crypto.createHash('sha512').update('pw1234').digest('base64')); // sha512- base64방법으로 pw1234를 암호화
 console.log('hex: ', crypto.createHash('sha512').update('pw1234').digest('hex')); // sha512- hex방법으로 pw1234를 암호화

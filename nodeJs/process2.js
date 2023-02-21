@@ -1,5 +1,5 @@
-//const { nextTick } = require('process');
-import process from 'process';
+const { nextTick } = require('process');
+//import process from 'process';
 console.log('start');
 
 setTimeout(() => {

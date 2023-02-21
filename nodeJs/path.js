@@ -1,4 +1,5 @@
-import path from 'path';
+//import path from 'path';
+const path = require('path');
 
 const __filename = 'test.txt';
 console.log(__filename); // 현재 파일의 절대 경로
