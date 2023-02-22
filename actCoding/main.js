@@ -2,10 +2,10 @@ var http = require('http');
 var fs = require('fs');
 var url = require('url');
 
-var testFolder = './data';
+var port = 3000;
 
 // 템플릿 생성 [공통]
-function templateHtml(title, listTemplate, description) {
+function templateHtml(title, list, body) {
     // 화면 VIEW template
     var template = `
     <!doctype html>
@@ -16,9 +16,10 @@ function templateHtml(title, listTemplate, description) {
     </head>
     <body>
     <h1><a href="/">WEB</a></h1>
-    ${listTemplate}
+    ${list}
     <h2>${title}</h2>
-    ${description}
+    <a href="/create">create</a>
+    ${body}
     </body>
     </html>`;
 
@@ -26,13 +27,26 @@ function templateHtml(title, listTemplate, description) {
 }
 
 // 파일 목록들을 조회하여 html 양식으로 정렬
-function tamplateList(filelist) {
+function templateList(filelist) {
     var list = '<ol>';
     for (var i = 0; i < filelist.length; i++) {
         list += `<li><a href="/?id=${filelist[i]}">${filelist[i]}</a></li>`;
     }
     list += '</ol>';
     return list;
+}
+
+function makeReadFilesTempl(title, contents, res) {
+    var folder = './data';
+    // 지정 경로에 있는 폴더의 하위 파일들을 조회 가능
+    fs.readdir(folder, function(error, filelist) {
+        //console.log(filelist);
+        var list = templateList(filelist);
+        var template = templateHtml(title, list, contents);
+
+        res.writeHead(200);
+        res.end(template); // res.send와 같은 방식으로 사용된다
+    });
 }
 
 // index.html 페이지를 로드하는 서버
@@ -65,40 +79,47 @@ var app = http.createServer(function(req, res) {
             // 관련 ID의 파일명을 가진 파일을 읽어와서 template에 추가
             //fs.readFile(`./data/${title}`, 'utf-8', function(err, description) {
             var title = 'Welcome';
-            var description = 'Hello Node.js';
+            var contents = 'Hello Node.js';
 
-            // 지정 경로에 있는 폴더의 하위 파일들을 조회 가능
-            fs.readdir(testFolder, function(error, filelist) {
-                //console.log(filelist);
-                var listTemplate = tamplateList(filelist);
-                var template = templateHtml(title, listTemplate, description);
+            makeReadFilesTempl(title, contents, res);
 
-                res.writeHead(200);
-                res.end(template); // res.send와 같은 방식으로 사용된다
-            });
             //});
         } else {
             // 관련 ID의 파일명을 가진 파일을 읽어와서 template에 추가
-            fs.readFile(`./data/${id}`, 'utf-8', function(err, description) {
+            fs.readFile(`./data/${id}`, 'utf-8', function(err, contents) {
                 var title = queryData.id;
 
-                // 지정 경로에 있는 폴더의 하위 파일들을 조회 가능
-                fs.readdir(testFolder, function(error, filelist) {
-                    //console.log(filelist);
-                    var listTemplate = tamplateList(filelist);
-                    var template = templateHtml(title, listTemplate, description);
-
-                    res.writeHead(200);
-                    res.end(template); // res.send와 같은 방식으로 사용된다
-                });
+                // ID 값으로 파일을 조회한 후 템플릿을 생성해오는 Func
+                makeReadFilesTempl(title, contents, res);
             });
         }
+    } else if (pathName === '/create') {
+        var folder = './data';
+        var contents = `
+        <form action="http://localhost:3000/process_create" method="post">
+            <p><input type="text" name="title" placeholder="title"></p>
+            <p>
+                <textarea name="description" placeholder="description"></textarea>
+            </p>
+            <p>
+                <input type="submit">
+            </p>
+        </form>`;
+
+        fs.readdir(folder, 'utf-8', function(err, filelist) {
+            var title = 'WEB - create';
+            var list = templateList(filelist);
+            var template = templateHtml(title, list, contents);
+
+            res.writeHead(200);
+            res.end(template);
+        });
     } else {
         res.writeHead(404);
         res.end('NOT FOUND');
     }
 });
 
-app.listen(3000, () => {
-    console.log('server open!!')
+app.listen(port, () => {
+    console.log(`server open ${port}`)
 });
